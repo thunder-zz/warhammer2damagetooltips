@@ -1,11 +1,16 @@
 from datetime import datetime
+import os
 
 class Logger:
     def __init__(self, output_file_name):
         self.active_class = "Main"
         self.last_active_class = "Main"
-        self.log_file = open(output_file_name, "w")
-        self.debug_file = open("debug.txt", "w")
+        if not os.path.isdir("./log"):
+            os.mkdir("log")
+        
+        self.log_file = open("log/" + output_file_name, "w")
+        self.debug_file = open("log/debug.txt", "w")
+        
         self.log_file.write("Log file created at: " + str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + "\n")
 
     def __del__(self):

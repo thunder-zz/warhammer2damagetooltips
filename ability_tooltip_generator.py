@@ -1,5 +1,6 @@
 import sys
 import hashlib
+import os
 
 class AbilityTooltipGenerator:
     # TAG -> [Reference, Sort order priority] (Higher = lower in the game UI tooltip)
@@ -135,17 +136,19 @@ class AbilityTooltipGenerator:
         for tooltip in self.arr_tooltips:
             log.debug(str(tooltip))
 
+        if not os.path.isdir("./out"):
+            os.mkdir("out")
 
         log.info("Started generating tsv files.")
-        tooltip_sort_order_file = open("unit_abilities_additional_ui_effects_tables.tsv", "w", newline="")
+        tooltip_sort_order_file = open("out/unit_abilities_additional_ui_effects_tables.tsv", "w", newline="")
         tooltip_sort_order_file.write("unit_abilities_additional_ui_effects_tables\t2\n")
         tooltip_sort_order_file.write("key\tsort_order\n")
 
-        ability_to_tooltip_map_file = open("unit_abilities_to_additional_ui_effects_juncs_tables.tsv", "w", newline="")
+        ability_to_tooltip_map_file = open("out/unit_abilities_to_additional_ui_effects_juncs_tables.tsv", "w", newline="")
         ability_to_tooltip_map_file.write("unit_abilities_to_additional_ui_effects_juncs_tables\t0\n")
         ability_to_tooltip_map_file.write("ability\teffect\n")
 
-        localisaton_file = open("th_damage_loc.tsv", "w", newline="")
+        localisaton_file = open("out/th_damage_loc.tsv", "w", newline="")
         localisaton_file.write("Loc PackedFile\t1\n")
         localisaton_file.write("key\ttext\ttooltip\n")
 

@@ -21,7 +21,7 @@ class SpellManager:
         self.ability_phases = ability_factory.get_ability_phases()
 
     def generate_tooltips(self, atg, log):
-        log.set_active_class("ProjectileManager")
+        log.set_active_class("SpellManager")
         # All projectiles must contain any of the words to be included.
         # Ensures that no generic projectiles like arrows have tooltip generation
         projectile_ability_keywords = ["spell", "main_character_abilities", "weapon_abilities", "lord_abilities", "unit_abilities", "army_abilities", "passive"]

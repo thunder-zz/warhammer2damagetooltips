@@ -155,7 +155,7 @@ class XMLFactory(AbstractFactory):
         dmgap = int(xml_element.find("ap_damage").text)
         bonus_v_large = int(xml_element.find("bonus_v_large").text)
         bonus_v_infantry = int(xml_element.find("bonus_v_infantry").text)
-        is_fire_damage = int(xml_element.find("ignition_amount").text) == 1
+        is_fire_damage = int(xml_element.find("ignition_amount").text) > 0
         is_magical = int(xml_element.find("is_magical").text) == 1
         projectile_number = int(xml_element.find("projectile_number").text)
         voley = int(xml_element.find("shots_per_volley").text)
@@ -172,17 +172,207 @@ class XMLFactory(AbstractFactory):
         return Bombardment(key, num_projectiles, projectile_type_key)
 
 # Generate structs based on TSV files extracted from pack files.
-# Not implemented
 class TSVFactory(AbstractFactory):
-    def __init__(self, logger):
+    def __init__(self, logger, projectiles_tsv_path, projectile_bombardments_path, projectile_explosions_path, unit_special_abilities_path, vortex_tsv_path, special_ability_phases_path):
             super(TSVFactory, self).__init__(logger)
 
-    def create_ability_phase(self, source): raise NotImplementedError()
-    def create_vortex(self, source): raise NotImplementedError()
-    def create_special_unit_ability(self, source): raise NotImplementedError()
-    def create_projectile_explosion(self, source): raise NotImplementedError()
-    def create_projectile(self, source): raise NotImplementedError()
-    def create_bombardment(self, source): raise NotImplementedError()
+            self.ability_phase_localisation = {}
+
+            loc = open(special_ability_phases_path + ".loc", "r")
+            lines = loc.readlines()
+            for i in range(2, len(lines)):
+                line = lines[i].replace("\n", "").split("\t")
+                key = line[0]
+                localiastion = line[1]
+                self.ability_phase_localisation[key] = localiastion.replace("\\\\", "\\")
+
+            loc.close()
+
+            # Explosions must be parsed before projectiles as projectile can reference an explosion
+            self.parse_projectile_explosions(projectile_explosions_path)
+            self.parse_projectiles(projectiles_tsv_path)
+            self.parse_bombardments(projectile_bombardments_path)
+            self.parse_unit_special_abilities(unit_special_abilities_path)
+            self.parse_vortexs(vortex_tsv_path)
+            self.parse_special_ability_phases(special_ability_phases_path)
+
+    TYPE_INT   = 0
+    TYPE_FLOAT = 1
+    TYPE_STR   = 2
+    TYPE_BOOL  = 3
+
+    def parse_tsv(self, path, constructor_func):        
+        f = open(path, "r")
+        
+        lines = f.readlines()
+
+        headers = lines[1].replace("/n", "").split("\t")
+        header_type_info = self.find_column_type(lines, headers)
+
+        for i in range(2, len(lines)):
+            value_map = {}
+            values = lines[i].replace("\n", "").split("\t")
+
+            for j in range(len(headers)):
+                value_map[headers[j]] = self.cast_to_type(values[j], headers[j], header_type_info)
+            
+            constructor_func(value_map)
+
+        f.close()
+
+    # Determine the datatype for columns automatically
+    def find_column_type(self, lines, headers, debug=False):
+        header_type_info = {}
+
+        for i in range(2, len(lines)):
+            line = lines[i].replace("\n", "").split("\t")
+            for j in range(len(line)):
+                value = line[j]
+                try:
+                    # Check if string is a valid int. Throws value error for floats.
+                    int(value)
+                    # prevent overwriting floats
+                    if headers[j] not in header_type_info:
+                        header_type_info[headers[j]] = self.TYPE_INT
+                except ValueError:
+                    # Not an int
+                    try:
+                        float(value)
+                        header_type_info[headers[j]] = self.TYPE_FLOAT
+                    except ValueError:
+                        # Not a float/int
+                        if value == "true" or value == "false": header_type_info[headers[j]] = self.TYPE_BOOL
+                        else: header_type_info[headers[j]] = self.TYPE_STR
+        
+        return header_type_info
+
+    def cast_to_type(self, value, header, type_info):
+        if type_info[header]   == self.TYPE_INT:   return int(value)
+        elif type_info[header] == self.TYPE_FLOAT: return float(value)
+        elif type_info[header] == self.TYPE_STR:   
+            if value == "": return None
+            return value
+        elif type_info[header] == self.TYPE_BOOL:  return value == "true"
+        else: raise Exception("Unsupported data type for value: " + value)
+
+    def parse_vortexs(self, path):
+        self.parse_tsv(path, self.create_vortex)
+        #print(self.vortexes)
+
+    def parse_projectiles(self, path):
+        self.parse_tsv(path, self.create_projectile)
+        #print(self.projectiles)
+
+    def parse_bombardments(self, path):
+        self.parse_tsv(path, self.create_bombardment)
+        #print(self.bombardments)
+
+    def parse_projectile_explosions(self, path):
+        self.parse_tsv(path, self.create_projectile_explosion)
+        #print(self.projectile_explosions)
+
+    def parse_unit_special_abilities(self, path):
+        self.parse_tsv(path, self.create_special_unit_ability)
+        #print(self.special_unit_abilities)
+
+    def parse_special_ability_phases(self, path):
+        self.parse_tsv(path, self.create_ability_phase)
+        #print(self.ability_phases)
+
+    def create_ability_phase(self, source):
+        key = source["id"]
+        dmg = source["damage_amount"]
+        dmg_chance = source["damage_chance"]
+        duration = source["duration"]
+        frequency = source["hp_change_frequency"]
+
+        # Join onscreen_name with the localiastion file.
+        # This is included in xml files.
+        onscreen_name = self.ability_phase_localisation["special_ability_phases_onscreen_name_" + key] or ""
+
+        max_damaged_entities = source["max_damaged_entities"]
+        
+        ability_phase = AbilityPhase(key, dmg, dmg_chance, duration, frequency, max_damaged_entities, onscreen_name)
+
+        self.ability_phases[ability_phase.key] = ability_phase
+        self.log.debug("Adding ability phase: " +str(ability_phase))
+
+    def create_vortex(self, source): 
+        key = source["vortex_key"]
+        dmg = source["damage"]
+        dmgap = source["damage_ap"]
+        is_fire_damage = source["ignition_amount"]
+        is_magical = source["is_magical"]
+        goal_radius = source["goal_radius"]
+        start_radius = source["start_radius"]
+        movement_speed = source["movement_speed"]
+        expansion_speed = source["expansion_speed"]
+        contact_effect = source["contact_effect"]
+
+        vortex = Vortex(key, dmg, dmgap, is_fire_damage, is_magical, goal_radius, start_radius, movement_speed, expansion_speed, None, contact_effect)
+
+        self.vortexes[vortex.key] = vortex
+        self.log.debug("Adding vortex: " +str(vortex))
+
+    def create_special_unit_ability(self, source): 
+
+        key = source["key"]
+        used_projectile_key = source["activated_projectile"]
+        used_vortex_key = source["vortex"]
+        used_bombardment_key = source["bombardment"]
+        wind_up_time = source["wind_up_time"]
+        is_passive = source["passive"]
+
+        special_unit_ability = SpecialUnitAbility(key, used_projectile_key, used_vortex_key, used_bombardment_key, wind_up_time, is_passive)
+
+        self.special_unit_abilities[special_unit_ability.key] = special_unit_ability
+        self.log.debug("Adding special unit ability: " +str(special_unit_ability))
+
+
+    def create_projectile_explosion(self, source): 
+        key = source["key"]
+        detonation_dmg = source["detonation_damage"]
+        detonation_dmgap = source["detonation_damage_ap"]
+        magical = source["is_magical"]
+        
+        projectile_explosion = ProjectileExplosion(key, detonation_dmg, detonation_dmgap, magical)
+
+        if projectile_explosion.detonation_damage > 0 or projectile_explosion.detonation_damage_ap > 0:
+            self.projectile_explosions[projectile_explosion.key] = projectile_explosion
+            self.log.debug("Adding projectile explosion: " +str(projectile_explosion))
+
+    def create_projectile(self, source):
+        key = source["key"]
+        dmg = source["damage"]
+        dmgap = source["ap_damage"]
+        bonus_v_large = source["bonus_v_large"]
+        bonus_v_infantry = source["bonus_v_infantry"]
+        is_fire_damage = source["ignition_amount"] > 0
+        is_magical = source["is_magical"]
+        projectile_number = source["projectile_number"]
+        voley = source["shots_per_volley"]
+        explosion_type = source["explosion_type"]
+        contact_stat_effect = source["contact_stat_effect"]
+
+        projectile = Projectile(key, dmg, dmgap, bonus_v_large, bonus_v_infantry, is_fire_damage, is_magical, projectile_number, voley, explosion_type, None, contact_stat_effect)
+
+        projectile_explosion = projectile.get_projectile_explosion_if_exists(self.projectile_explosions)
+        if projectile_explosion != None: 
+            projectile.set_projectile_explosion_ref(projectile_explosion)
+
+        self.log.debug("Adding projectile: " + str(projectile))
+        self.projectiles[projectile.key] = projectile
+
+    def create_bombardment(self, source): 
+        key = source["bombardment_key"]
+        num_projectiles = source["num_projectiles"]
+        projectile_type_key = source["projectile_type"]
+
+        bombardment = Bombardment(key, num_projectiles, projectile_type_key)
+        self.log.debug("Adding bombardment: " + str(bombardment))
+        self.bombardments[bombardment.key] = bombardment
+
+        
 
 
 # Classes for internal representation
@@ -338,8 +528,8 @@ class SpecialUnitAbility:
 class ProjectileExplosion:
     def __init__(self, key, detonation_dmg, detonation_dmgap, is_magical):
         self.__key = key
-        self.__detonation_dmg = detonation_dmg
-        self.__detonation_dmgap = detonation_dmgap
+        self.__detonation_dmg = int(detonation_dmg)
+        self.__detonation_dmgap = int(detonation_dmgap)
         self.__magical = is_magical
 
     def get_detonation_string(self):
@@ -366,11 +556,16 @@ class ProjectileExplosion:
 
     def __repr__(self): return self.__str__()
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__key == other.key and self.__detonation_dmg == other.detonation_damage and self.__detonation_dmgap == other.detonation_damage_ap and self.__magical == other.is_magical
+        return False
+
 class Projectile:
     def __init__(self, key, dmg, dmgap, b_v_L, b_v_I, is_fire, is_magical, proj_num, voley, explosion_type, proj_explosion_ref, contact_effect):
         self.__key = key
-        self.__dmg = dmg
-        self.__dmgap = dmgap
+        self.__dmg = int(dmg)
+        self.__dmgap = int(dmgap)
         self.__bonus_v_large = b_v_L 
         self.__bonus_v_infantry = b_v_I
         self.__is_fire_damage = is_fire
@@ -414,7 +609,7 @@ class Projectile:
         
 
     def __str__(self):
-        return ("Projectile: {key} - dmg:{dmg}, dmgap:{dmgap}, b_v_L:{bvl}, b_v_I:{bvi}, fire:{fire}, magical:{magical}, #proj:{projnum}, voley:{voley}, detonation_ref:{dref}"
+        return ("Projectile: {key} - dmg:{dmg}, dmgap:{dmgap}, b_v_L:{bvl}, b_v_I:{bvi}, is_fire_damage:{fire}, magical:{magical}, #proj:{projnum}, voley:{voley}, detonation_ref:{dref}"
             .format(key=self.__key, dmg=self.__dmg, dmgap=self.__dmgap, bvl=self.__bonus_v_large, bvi=self.__bonus_v_infantry, magical=self.__is_magical, fire=self.__is_fire_damage,
             projnum=self.__projectile_number, voley=self.__voley, dref=self.ref_projectile_explosion))
 
