@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="battle_vortexs.xsd" export_time="Fri May 1 11:25:08 2020" revision="369" export_branch="C:/Users/sean.macdonald/AppData/Roaming/TWDaemon/1945/dave" export_user="bob">
-<edit_uuid>e750874f-d6c2-4366-b347-5fed90bb72cf</edit_uuid>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="battle_vortexs.xsd" export_time="Thu Oct 29 11:52:15 2020" revision="383" export_branch="C:/Users/sean.macdonald/AppData/Roaming/TWDaemon/2200/dave" export_user="bob">
+<edit_uuid>ec9053b6-ec19-44f0-aa2b-415474b7c091</edit_uuid>
 <battle_vortexs record_uuid="{e002c9fe-65ec-42bb-89c9-e09ad7377137}" record_timestamp="1509467053541" record_key="wh2_dlc09_abilities_sand_storm">
 <affects_allies>1</affects_allies>
 <building_collision>1.ignore</building_collision>
@@ -813,7 +813,7 @@
 <start_radius>0.1</start_radius>
 <vortex_key>wh2_dlc12_spell_kroak_deliverance_of_itza_3</vortex_key>
 </battle_vortexs>
-<battle_vortexs record_uuid="{bc89dab4-6893-4475-833a-7e86f6dc28aa}" record_timestamp="1566061765532" record_key="wh2_dlc12_unit_abilities_ark_of_sotek">
+<battle_vortexs record_uuid="{bc89dab4-6893-4475-833a-7e86f6dc28aa}" record_timestamp="1602276255701" record_key="wh2_dlc12_unit_abilities_ark_of_sotek">
 <affects_allies>0</affects_allies>
 <building_collision>1.ignore</building_collision>
 <change_max_angle>0</change_max_angle>
@@ -821,7 +821,7 @@
 <composite_scene_blood></composite_scene_blood>
 <composite_scene_group></composite_scene_group>
 <contact_effect>wh_main_unit_contact_poison</contact_effect>
-<damage>4</damage>
+<damage>5</damage>
 <damage_ap>0</damage_ap>
 <delay>0</delay>
 <delay_between_vortexes>1</delay_between_vortexes>
@@ -1653,6 +1653,151 @@
 <num_vortexes>1</num_vortexes>
 <start_radius>0.1</start_radius>
 <vortex_key>wh2_dlc15_unit_passive_fiery_rebirth</vortex_key>
+</battle_vortexs>
+<battle_vortexs record_uuid="{55415826-9d47-40d1-874c-5ef618be2f65}" record_timestamp="1591719207714" record_key="wh2_dlc16_hero_abilities_evisceration">
+<affects_allies>0</affects_allies>
+<building_collision>1.ignore</building_collision>
+<change_max_angle>0</change_max_angle>
+<composite_scene>composite_scene\spells_and_abilities\wh2_dlc16_evisceration.csc</composite_scene>
+<composite_scene_blood></composite_scene_blood>
+<composite_scene_group></composite_scene_group>
+<contact_effect></contact_effect>
+<damage>0</damage>
+<damage_ap>120</damage_ap>
+<delay>0</delay>
+<delay_between_vortexes>1</delay_between_vortexes>
+<detonation_force>60</detonation_force>
+<duration>4</duration>
+<expansion_speed>50</expansion_speed>
+<goal_radius>6</goal_radius>
+<height_off_ground>0</height_off_ground>
+<ignition_amount>0</ignition_amount>
+<infinite_height>0</infinite_height>
+<is_magical>0</is_magical>
+<launch_source>target_centre</launch_source>
+<launch_source_offset>0</launch_source_offset>
+<launch_vfx></launch_vfx>
+<move_change_freq>0</move_change_freq>
+<movement_speed>0</movement_speed>
+<num_vortexes>1</num_vortexes>
+<start_radius>1</start_radius>
+<vortex_key>wh2_dlc16_hero_abilities_evisceration</vortex_key>
+</battle_vortexs>
+<battle_vortexs record_uuid="{f168135a-f3ee-4882-940b-912860c2e16c}" record_timestamp="1598956975864" record_key="wh2_dlc16_item_abilities_acorns_of_the_oak_of_ages">
+<affects_allies>1</affects_allies>
+<building_collision>1.ignore</building_collision>
+<change_max_angle>0</change_max_angle>
+<composite_scene>composite_scene\spells_and_abilities\acorn_oak_of_ages.csc</composite_scene>
+<composite_scene_blood></composite_scene_blood>
+<composite_scene_group></composite_scene_group>
+<contact_effect>wh_dlc05_spell_life_awakening_of_the_wood</contact_effect>
+<damage>0</damage>
+<damage_ap>12</damage_ap>
+<delay>1.6</delay>
+<delay_between_vortexes>1</delay_between_vortexes>
+<detonation_force>200</detonation_force>
+<duration>1</duration>
+<expansion_speed>15</expansion_speed>
+<goal_radius>15</goal_radius>
+<height_off_ground>0</height_off_ground>
+<ignition_amount>0</ignition_amount>
+<infinite_height>0</infinite_height>
+<is_magical>1</is_magical>
+<launch_source>target_centre</launch_source>
+<launch_source_offset>0</launch_source_offset>
+<launch_vfx></launch_vfx>
+<move_change_freq>0</move_change_freq>
+<movement_speed>0</movement_speed>
+<num_vortexes>1</num_vortexes>
+<start_radius>1</start_radius>
+<vortex_key>wh2_dlc16_item_abilities_acorns_of_the_oak_of_ages</vortex_key>
+</battle_vortexs>
+<battle_vortexs record_uuid="{6e8f578b-55ad-4781-aaab-6902dac6e906}" record_timestamp="1602505196104" record_key="wh2_dlc16_unit_abilities_cellular_instability">
+<affects_allies>1</affects_allies>
+<building_collision>1.ignore</building_collision>
+<change_max_angle>0</change_max_angle>
+<composite_scene>composite_scene\spells_and_abilities\wh2_main_abilities_warpbomb.csc</composite_scene>
+<composite_scene_blood></composite_scene_blood>
+<composite_scene_group></composite_scene_group>
+<contact_effect></contact_effect>
+<damage>0</damage>
+<damage_ap>54</damage_ap>
+<delay>0.2</delay>
+<delay_between_vortexes>1</delay_between_vortexes>
+<detonation_force>200</detonation_force>
+<duration>1</duration>
+<expansion_speed>25</expansion_speed>
+<goal_radius>25</goal_radius>
+<height_off_ground>0</height_off_ground>
+<ignition_amount>0</ignition_amount>
+<infinite_height>0</infinite_height>
+<is_magical>1</is_magical>
+<launch_source>target_centre</launch_source>
+<launch_source_offset>0</launch_source_offset>
+<launch_vfx></launch_vfx>
+<move_change_freq>0</move_change_freq>
+<movement_speed>0</movement_speed>
+<num_vortexes>1</num_vortexes>
+<start_radius>0.1</start_radius>
+<vortex_key>wh2_dlc16_unit_abilities_cellular_instability</vortex_key>
+</battle_vortexs>
+<battle_vortexs record_uuid="{1a666d89-245c-4ace-8c83-61b868d2649a}" record_timestamp="1602505196104" record_key="wh2_dlc16_unit_passive_instability_4">
+<affects_allies>1</affects_allies>
+<building_collision>1.ignore</building_collision>
+<change_max_angle>0</change_max_angle>
+<composite_scene>composite_scene\spells_and_abilities\wh2_main_abilities_warpbomb.csc</composite_scene>
+<composite_scene_blood></composite_scene_blood>
+<composite_scene_group></composite_scene_group>
+<contact_effect></contact_effect>
+<damage>0</damage>
+<damage_ap>63</damage_ap>
+<delay>0.2</delay>
+<delay_between_vortexes>1</delay_between_vortexes>
+<detonation_force>200</detonation_force>
+<duration>1</duration>
+<expansion_speed>25</expansion_speed>
+<goal_radius>25</goal_radius>
+<height_off_ground>0</height_off_ground>
+<ignition_amount>0</ignition_amount>
+<infinite_height>0</infinite_height>
+<is_magical>1</is_magical>
+<launch_source>target_centre</launch_source>
+<launch_source_offset>0</launch_source_offset>
+<launch_vfx></launch_vfx>
+<move_change_freq>0</move_change_freq>
+<movement_speed>0</movement_speed>
+<num_vortexes>1</num_vortexes>
+<start_radius>0.1</start_radius>
+<vortex_key>wh2_dlc16_unit_passive_instability_4</vortex_key>
+</battle_vortexs>
+<battle_vortexs record_uuid="{a71060b5-81b1-458e-90ca-1b3004412cf0}" record_timestamp="1603972335162" record_key="wh2_dlc16_unit_passive_warp_discharge">
+<affects_allies>0</affects_allies>
+<building_collision>1.ignore</building_collision>
+<change_max_angle>0</change_max_angle>
+<composite_scene>composite_scene\spells_and_abilities\wh2_dlc16_warp_discharge.csc</composite_scene>
+<composite_scene_blood></composite_scene_blood>
+<composite_scene_group></composite_scene_group>
+<contact_effect></contact_effect>
+<damage>0</damage>
+<damage_ap>8</damage_ap>
+<delay>0</delay>
+<delay_between_vortexes>1</delay_between_vortexes>
+<detonation_force>5</detonation_force>
+<duration>2</duration>
+<expansion_speed>-1</expansion_speed>
+<goal_radius>10</goal_radius>
+<height_off_ground>0</height_off_ground>
+<ignition_amount>0</ignition_amount>
+<infinite_height>0</infinite_height>
+<is_magical>1</is_magical>
+<launch_source>target_centre</launch_source>
+<launch_source_offset>0</launch_source_offset>
+<launch_vfx></launch_vfx>
+<move_change_freq>0</move_change_freq>
+<movement_speed>0</movement_speed>
+<num_vortexes>1</num_vortexes>
+<start_radius>5</start_radius>
+<vortex_key>wh2_dlc16_unit_passive_warp_discharge</vortex_key>
 </battle_vortexs>
 <battle_vortexs record_uuid="{8a0c0dee-5b1e-4abb-bd1b-204efb909d91}" record_timestamp="1502126057895" record_key="wh2_main_army_abilities_dark_conduit">
 <affects_allies>0</affects_allies>
@@ -2909,7 +3054,7 @@
 <composite_scene_blood></composite_scene_blood>
 <composite_scene_group></composite_scene_group>
 <contact_effect></contact_effect>
-<damage>72</damage>
+<damage>36</damage>
 <damage_ap>36</damage_ap>
 <delay>1</delay>
 <delay_between_vortexes>1</delay_between_vortexes>
@@ -2938,7 +3083,7 @@
 <composite_scene_blood></composite_scene_blood>
 <composite_scene_group></composite_scene_group>
 <contact_effect></contact_effect>
-<damage>72</damage>
+<damage>36</damage>
 <damage_ap>72</damage_ap>
 <delay>1</delay>
 <delay_between_vortexes>1</delay_between_vortexes>
@@ -3104,7 +3249,7 @@
 <start_radius>7</start_radius>
 <vortex_key>wh_dlc08_item_abilities_ancient_frost_wyrm_scale</vortex_key>
 </battle_vortexs>
-<battle_vortexs record_uuid="{3d556f0e-8ee0-4115-9062-74bad60740cd}" record_timestamp="1513782708356" record_key="wh_dlc08_item_seafang">
+<battle_vortexs record_uuid="{3d556f0e-8ee0-4115-9062-74bad60740cd}" record_timestamp="1603138099470" record_key="wh_dlc08_item_seafang">
 <affects_allies>1</affects_allies>
 <building_collision>1.ignore</building_collision>
 <change_max_angle>0</change_max_angle>
@@ -3112,8 +3257,8 @@
 <composite_scene_blood></composite_scene_blood>
 <composite_scene_group></composite_scene_group>
 <contact_effect>wh_dlc08_unit_contact_frostbite</contact_effect>
-<damage>72</damage>
-<damage_ap>36</damage_ap>
+<damage>54</damage>
+<damage_ap>27</damage_ap>
 <delay>0</delay>
 <delay_between_vortexes>1</delay_between_vortexes>
 <detonation_force>30</detonation_force>
@@ -3518,14 +3663,14 @@
 <composite_scene_blood></composite_scene_blood>
 <composite_scene_group></composite_scene_group>
 <contact_effect>wh_main_unit_contact_morale</contact_effect>
-<damage>24</damage>
+<damage>14</damage>
 <damage_ap>0</damage_ap>
 <delay>0</delay>
 <delay_between_vortexes>1</delay_between_vortexes>
 <detonation_force>30</detonation_force>
 <duration>20</duration>
 <expansion_speed>20</expansion_speed>
-<goal_radius>5</goal_radius>
+<goal_radius>7</goal_radius>
 <height_off_ground>0</height_off_ground>
 <ignition_amount>1</ignition_amount>
 <infinite_height>0</infinite_height>
@@ -3536,7 +3681,7 @@
 <move_change_freq>0.5</move_change_freq>
 <movement_speed>9</movement_speed>
 <num_vortexes>1</num_vortexes>
-<start_radius>5</start_radius>
+<start_radius>7</start_radius>
 <vortex_key>wh_main_spell_fire_the_burning_head</vortex_key>
 </battle_vortexs>
 <battle_vortexs record_uuid="{664455fc-7da3-4534-8101-303eead5b819}" record_timestamp="1504191177769" record_key="wh_main_spell_fire_the_burning_head_upgraded">
@@ -3547,7 +3692,7 @@
 <composite_scene_blood></composite_scene_blood>
 <composite_scene_group></composite_scene_group>
 <contact_effect>wh_main_unit_contact_morale</contact_effect>
-<damage>24</damage>
+<damage>21</damage>
 <damage_ap>0</damage_ap>
 <delay>0</delay>
 <delay_between_vortexes>1</delay_between_vortexes>

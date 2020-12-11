@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="projectile_bombardments.xsd" export_time="Fri Apr 17 18:16:09 2020" revision="174" export_branch="C:/Users/Leif.Burrows/AppData/Roaming/TWDaemon/1931/dave" export_user="bob">
-<edit_uuid>13917ee0-7055-40c6-bb1c-84c31b1456aa</edit_uuid>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="projectile_bombardments.xsd" export_time="Thu May 21 14:34:41 2020" revision="174" export_branch="C:/Users/charlie.dell/AppData/Roaming/TWDaemon/1955/dave" export_user="bob">
+<edit_uuid>2b462d35-aef7-4579-b5b9-022d8801c91b</edit_uuid>
 <projectile_bombardments record_uuid="{6ad0aad8-8362-407d-a609-d27e8ddb7940}" record_timestamp="1509097177420" record_key="wh2_dlc09_unit_abilities_death_from_above">
 <arrival_window>0.7</arrival_window>
 <audio_type></audio_type>
@@ -239,7 +239,7 @@
 <randomise_launch>1</randomise_launch>
 <start_time>2</start_time>
 </projectile_bombardments>
-<projectile_bombardments record_uuid="{f6ad865f-1140-41cf-84ae-63482f6c2521}" record_timestamp="1587143761740" record_key="wh2_dlc15_army_abilities_doom_diver_strike_enhanced">
+<projectile_bombardments record_uuid="{f6ad865f-1140-41cf-84ae-63482f6c2521}" record_timestamp="1590068080569" record_key="wh2_dlc15_army_abilities_doom_diver_strike_enhanced">
 <arrival_window>3</arrival_window>
 <audio_type>wh2_dlc15_ability_doom_diver_strike</audio_type>
 <bombardment_key>wh2_dlc15_army_abilities_doom_diver_strike_enhanced</bombardment_key>

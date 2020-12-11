@@ -1,5 +1,6 @@
 from abc import ABC, abstractclassmethod
 import xml.etree.ElementTree as ET
+import os
 
 
 def create_damage_string(dmg, dmgap, is_fire_damage, is_magical_damage):
@@ -12,6 +13,55 @@ def create_damage_string(dmg, dmgap, is_fire_damage, is_magical_damage):
         damageTxt += str(dmgap) +"[[img:icon_ap]][[/img]]"
     return damageTxt
 
+class FactoryBuilder:
+    TSV = 1
+    XML = 2
+
+    def __init__(self):
+        self.projectiles_path = None
+        self.projectile_bombardments_path = None
+        self.projectile_explosions_path = None
+        self.unit_special_abilities_path = None
+        self.vortex_path = None
+        self.special_ability_phases_path = None
+
+    def with_projectiles(self, path):
+        self.projectiles_path = path
+        return self
+
+    def with_bombardments(self, path):
+        self.projectile_bombardments = path
+        return self
+
+    def with_projectile_explosion(self, path):
+        self.projectile_explosions_path = path
+        return self
+
+    def with_unit_special_abilities(self, path):
+        self.unit_special_abilities_path = path
+        return self
+
+    def with_vortex(self, path):
+        self.vortex_path = path
+        return self
+
+    def with_ability_phase(self, path):
+        self.special_ability_phases_path = path
+        return self
+
+    def build(self, log, format):
+        if format == self.TSV:
+            return TSVFactory(log, self.projectiles_path, self.projectile_bombardments_path, self.projectile_explosions_path,
+                self.unit_special_abilities_path, self.vortex_path, self.special_ability_phases_path)
+
+        elif format == self.XML:
+            return XMLFactory(log, self.projectiles_path, self.projectile_bombardments_path, self.projectile_explosions_path,
+                self.unit_special_abilities_path, self.vortex_path, self.special_ability_phases_path)
+        else:
+            raise Exception("Invalid format provided. Use FactoryBuilder.XML or FactoryBuilder.TSV")
+            
+
+    pass
 
 class AbstractFactory(ABC):
     def __init__(self, logger):
@@ -23,12 +73,12 @@ class AbstractFactory(ABC):
         self.ability_phases = {}
         self.log = logger
     
-    def get_bombardments(self): return self.bombardments
-    def get_projectiles(self): return self.projectiles
-    def get_projectile_explosions(self): return self.projectile_explosions
+    def get_bombardments(self):           return self.bombardments
+    def get_projectiles(self):            return self.projectiles
+    def get_projectile_explosions(self):  return self.projectile_explosions
     def get_special_unit_abilities(self): return self.special_unit_abilities
-    def get_vortexs(self): return self.vortexes
-    def get_ability_phases(self): return self.ability_phases
+    def get_vortexs(self):                return self.vortexes
+    def get_ability_phases(self):         return self.ability_phases
 
     @abstractclassmethod
     def create_ability_phase(self, source): return
@@ -47,45 +97,39 @@ class AbstractFactory(ABC):
 class XMLFactory(AbstractFactory):
     def __init__(self, logger, projectiles_xml_path, bombardment_xml_path, projectile_explosions_xml_path, unit_special_abilities_xml_path, vortex_xml_path, phases_xml_path):
         super(XMLFactory, self).__init__(logger)
-        self.projectiles_root = ET.parse(projectiles_xml_path).getroot()
-        self.bombardment_root = ET.parse(bombardment_xml_path).getroot()
-        self.projectile_explosions_root = ET.parse(projectile_explosions_xml_path).getroot()
-        self.unit_special_abilities_root = ET.parse(unit_special_abilities_xml_path).getroot()
-        self.vortex_root = ET.parse(vortex_xml_path).getroot()
-        self.phases_root = ET.parse(phases_xml_path).getroot()
-        
         self.log.set_active_class("XMLFactory")
-        self._parse_ability_phases()
-        self._parse_vortexs()
-        self._parse_explosions()
-        self._parse_projectiles()
-        self._parse_bombardments()
-        self._parse_unit_abilities()
-        self.log.reset_active_class()
 
+        if phases_xml_path:                 self._parse_ability_phases(ET.parse(phases_xml_path).getroot())
+        if vortex_xml_path:                 self._parse_vortexs(ET.parse(vortex_xml_path).getroot())
+        if projectile_explosions_xml_path:  self._parse_explosions(ET.parse(projectile_explosions_xml_path).getroot())
+        if projectiles_xml_path:            self._parse_projectiles(ET.parse(projectiles_xml_path).getroot())
+        if bombardment_xml_path:            self._parse_bombardments(ET.parse(bombardment_xml_path).getroot())
+        if unit_special_abilities_xml_path: self._parse_unit_abilities(ET.parse(unit_special_abilities_xml_path).getroot())
+
+        self.log.reset_active_class()
     # Parse functions
 
-    def _parse_ability_phases(self):
-        for ability_phase in self.phases_root.findall("special_ability_phases"):
+    def _parse_ability_phases(self, root):
+        for ability_phase in root.findall("special_ability_phases"):
             c_ability_phase = self.create_ability_phase(ability_phase)
             self.ability_phases[c_ability_phase.key] = c_ability_phase
             self.log.debug("Adding ability phase: " +str(c_ability_phase))
 
-    def _parse_vortexs(self):
-        for vortex in self.vortex_root.findall("battle_vortexs"):
+    def _parse_vortexs(self, root):
+        for vortex in root.findall("battle_vortexs"):
             c_vortex = self.create_vortex(vortex)
             self.vortexes[c_vortex.key] = c_vortex
             self.log.debug("Adding vortex: " +str(c_vortex))
 
-    def _parse_explosions(self):
-        for explosion in self.projectile_explosions_root.findall("projectiles_explosions"):
+    def _parse_explosions(self, root):
+        for explosion in root.findall("projectiles_explosions"):
             c_explosion = self.create_projectile_explosion(explosion)
             if c_explosion.detonation_damage > 0 or c_explosion.detonation_damage_ap > 0:
                 self.log.debug("Adding explosion: " + str(c_explosion))
                 self.projectile_explosions[c_explosion.key] = c_explosion
 
-    def _parse_projectiles(self):
-        for projectile in self.projectiles_root.findall("projectiles"):
+    def _parse_projectiles(self, root):
+        for projectile in root.findall("projectiles"):
             c_projectile = self.create_projectile(projectile)
             projectile_explosion = c_projectile.get_projectile_explosion_if_exists(self.projectile_explosions)
             if projectile_explosion != None: 
@@ -93,13 +137,13 @@ class XMLFactory(AbstractFactory):
             self.log.debug("Adding projectile: " + str(c_projectile))
             self.projectiles[c_projectile.key] = c_projectile
 
-    def _parse_bombardments(self):
-        for bombardment in self.bombardment_root.findall("projectile_bombardments"):
+    def _parse_bombardments(self, root):
+        for bombardment in root.findall("projectile_bombardments"):
             c_bombardment = self.create_bombardment(bombardment)
             self.bombardments[c_bombardment.key] = c_bombardment
 
-    def _parse_unit_abilities(self):
-        for unit_ability in self.unit_special_abilities_root.findall("unit_special_abilities"):
+    def _parse_unit_abilities(self, root):
+        for unit_ability in root.findall("unit_special_abilities"):
             c_unit_ability = self.create_special_unit_ability(unit_ability)
             self.log.debug("Adding unit ability: " + str(c_unit_ability))
             self.special_unit_abilities[c_unit_ability.key] = c_unit_ability
@@ -107,99 +151,105 @@ class XMLFactory(AbstractFactory):
     # Object constructors
 
     def create_ability_phase(self, xml_element):
-        key = xml_element.find("id").text
-        dmg = int(xml_element.find("damage_amount").text)
-        dmg_chance = float(xml_element.find("damage_chance").text)
-        duration = float(xml_element.find("duration").text)
-        frequency = float(xml_element.find("hp_change_frequency").text)
-        onscreen_name = xml_element.find("onscreen_name").text or ""
+        key                  = xml_element.find("id").text
+        dmg                  = int(xml_element.find("damage_amount").text)
+        dmg_chance           = float(xml_element.find("damage_chance").text)
+        duration             = float(xml_element.find("duration").text)
+        frequency            = float(xml_element.find("hp_change_frequency").text)
+        onscreen_name        = xml_element.find("onscreen_name").text or ""
         max_damaged_entities = int(xml_element.find("max_damaged_entities").text)
         
         return AbilityPhase(key, dmg, dmg_chance, duration, frequency, max_damaged_entities, onscreen_name)
 
     def create_vortex(self, xml_element):
-        key = xml_element.find("vortex_key").text
-        dmg = int(xml_element.find("damage").text)
-        dmgap = int(xml_element.find("damage_ap").text)
-        is_fire_damage = int(xml_element.find("ignition_amount").text) == 1
-        is_magical = int(xml_element.find("is_magical").text) == 1
-        goal_radius = float(xml_element.find("goal_radius").text)
-        start_radius = float(xml_element.find("start_radius").text)
-        movement_speed = float(xml_element.find("movement_speed").text)
+        key             = xml_element.find("vortex_key").text
+        dmg             = int(xml_element.find("damage").text)
+        dmgap           = int(xml_element.find("damage_ap").text)
+        is_fire_damage  = int(xml_element.find("ignition_amount").text) == 1
+        is_magical      = int(xml_element.find("is_magical").text) == 1
+        goal_radius     = float(xml_element.find("goal_radius").text)
+        start_radius    = float(xml_element.find("start_radius").text)
+        movement_speed  = float(xml_element.find("movement_speed").text)
         expansion_speed = float(xml_element.find("expansion_speed").text)
-        contact_effect = xml_element.find("contact_effect").text
+        contact_effect  = xml_element.find("contact_effect").text
 
         return Vortex(key, dmg, dmgap, is_fire_damage, is_magical, goal_radius, start_radius, movement_speed, expansion_speed, None, contact_effect)
 
     def create_special_unit_ability(self, xml_element):
-        key = xml_element.find("key").text
-        used_projectile_key = xml_element.find("activated_projectile").text
-        used_vortex_key = xml_element.find("vortex").text
+        key                  = xml_element.find("key").text
+        used_projectile_key  = xml_element.find("activated_projectile").text
+        used_vortex_key      = xml_element.find("vortex").text
         used_bombardment_key = xml_element.find("bombardment").text
-        wind_up_time = float(xml_element.find("wind_up_time").text)
-        is_passive = (int)(xml_element.find("passive").text) == 1
+        wind_up_time         = float(xml_element.find("wind_up_time").text)
+        is_passive           = (int)(xml_element.find("passive").text) == 1
 
         return SpecialUnitAbility(key, used_projectile_key, used_vortex_key, used_bombardment_key, wind_up_time, is_passive)
 
     def create_projectile_explosion(self, xml_element):
-        key = xml_element.find("key").text
-        detonation_dmg = int(xml_element.find("detonation_damage").text)
+        key              = xml_element.find("key").text
+        detonation_dmg   = int(xml_element.find("detonation_damage").text)
         detonation_dmgap = int(xml_element.find("detonation_damage_ap").text)
-        magical = int(xml_element.find("is_magical").text) == 1
+        magical          = int(xml_element.find("is_magical").text) == 1
         
         return ProjectileExplosion(key, detonation_dmg, detonation_dmgap, magical)
 
     def create_projectile(self, xml_element):
-        key = xml_element.find("key").text
-        dmg = int(xml_element.find("damage").text)
-        dmgap = int(xml_element.find("ap_damage").text)
-        bonus_v_large = int(xml_element.find("bonus_v_large").text)
-        bonus_v_infantry = int(xml_element.find("bonus_v_infantry").text)
-        is_fire_damage = int(xml_element.find("ignition_amount").text) > 0
-        is_magical = int(xml_element.find("is_magical").text) == 1
-        projectile_number = int(xml_element.find("projectile_number").text)
-        voley = int(xml_element.find("shots_per_volley").text)
-        explosion_type = xml_element.find("explosion_type").text
+        key                 = xml_element.find("key").text
+        dmg                 = int(xml_element.find("damage").text)
+        dmgap               = int(xml_element.find("ap_damage").text)
+        bonus_v_large       = int(xml_element.find("bonus_v_large").text)
+        bonus_v_infantry    = int(xml_element.find("bonus_v_infantry").text)
+        is_fire_damage      = int(xml_element.find("ignition_amount").text) > 0
+        is_magical          = int(xml_element.find("is_magical").text) == 1
+        projectile_number   = int(xml_element.find("projectile_number").text)
+        voley               = int(xml_element.find("shots_per_volley").text)
+        explosion_type      = xml_element.find("explosion_type").text
         contact_stat_effect = xml_element.find("contact_stat_effect").text
 
         return Projectile(key, dmg, dmgap, bonus_v_large, bonus_v_infantry, is_fire_damage, is_magical, projectile_number, voley, explosion_type, None, contact_stat_effect)
 
     def create_bombardment(self, xml_element):
-        key = xml_element.find("bombardment_key").text
-        num_projectiles = int(xml_element.find("num_projectiles").text)
+        key                 = xml_element.find("bombardment_key").text
+        num_projectiles     = int(xml_element.find("num_projectiles").text)
         projectile_type_key = xml_element.find("projectile_type").text
 
         return Bombardment(key, num_projectiles, projectile_type_key)
 
 # Generate structs based on TSV files extracted from pack files.
 class TSVFactory(AbstractFactory):
-    def __init__(self, logger, projectiles_tsv_path, projectile_bombardments_path, projectile_explosions_path, unit_special_abilities_path, vortex_tsv_path, special_ability_phases_path):
-            super(TSVFactory, self).__init__(logger)
-
-            self.ability_phase_localisation = {}
-
-            loc = open(special_ability_phases_path + ".loc", "r")
-            lines = loc.readlines()
-            for i in range(2, len(lines)):
-                line = lines[i].replace("\n", "").split("\t")
-                key = line[0]
-                localiastion = line[1]
-                self.ability_phase_localisation[key] = localiastion.replace("\\\\", "\\")
-
-            loc.close()
-
-            # Explosions must be parsed before projectiles as projectile can reference an explosion
-            self.parse_projectile_explosions(projectile_explosions_path)
-            self.parse_projectiles(projectiles_tsv_path)
-            self.parse_bombardments(projectile_bombardments_path)
-            self.parse_unit_special_abilities(unit_special_abilities_path)
-            self.parse_vortexs(vortex_tsv_path)
-            self.parse_special_ability_phases(special_ability_phases_path)
-
     TYPE_INT   = 0
     TYPE_FLOAT = 1
     TYPE_STR   = 2
     TYPE_BOOL  = 3
+    
+    def __init__(self, logger, projectiles_tsv_path, projectile_bombardments_path, projectile_explosions_path, unit_special_abilities_path, vortex_tsv_path, special_ability_phases_path):
+        super(TSVFactory, self).__init__(logger)
+        logger.set_active_class("TSVFactory")
+
+        self.ability_phase_localisation = {}
+        if special_ability_phases_path and os.path.exists(special_ability_phases_path + ".loc"):
+            self.read_phase_loc(special_ability_phases_path)
+        
+        # Explosions must be parsed before projectiles as projectile can reference an explosion
+        if projectile_explosions_path:  self.parse_projectile_explosions(projectile_explosions_path)
+        if projectiles_tsv_path:        self.parse_projectiles(projectiles_tsv_path)
+        if projectile_explosions_path:  self.parse_bombardments(projectile_bombardments_path)
+        if unit_special_abilities_path: self.parse_unit_special_abilities(unit_special_abilities_path)
+        if vortex_tsv_path:             self.parse_vortexs(vortex_tsv_path)
+        if special_ability_phases_path: self.parse_special_ability_phases(special_ability_phases_path)
+
+        logger.reset_active_class()
+
+    def read_phase_loc(self, path):
+        loc = open(path + ".loc", "r")
+        lines = loc.readlines()
+        for i in range(2, len(lines)):
+            line = lines[i].replace("\n", "").split("\t")
+            key = line[0]
+            localiastion = line[1]
+            self.ability_phase_localisation[key] = localiastion.replace("\\\\", "\\")
+
+        loc.close()
 
     def parse_tsv(self, path, constructor_func):        
         f = open(path, "r")
@@ -221,6 +271,9 @@ class TSVFactory(AbstractFactory):
         f.close()
 
     # Determine the datatype for columns automatically
+    # For some reason exported tsv files sometimes treat values which are ints in assembly kit as floats
+    # Hence a cast to int in object constuctor is required to prevent tooltips from displaying decimals 
+    #e.g. damage as 16.0 instead of 16
     def find_column_type(self, lines, headers, debug=False):
         header_type_info = {}
 
@@ -315,7 +368,6 @@ class TSVFactory(AbstractFactory):
         self.log.debug("Adding vortex: " +str(vortex))
 
     def create_special_unit_ability(self, source): 
-
         key = source["key"]
         used_projectile_key = source["activated_projectile"]
         used_vortex_key = source["vortex"]
@@ -430,8 +482,8 @@ class AbilityPhase:
 class Vortex:
     def __init__(self, key, dmg, dmgap, is_fire_damage, is_magical, goal_radius, start_radius, movement_speed, expansion_speed, ability_phase_ref, contact_effect):
         self.__key = key
-        self.__dmg = dmg
-        self.__dmgap = dmgap
+        self.__dmg = int(dmg)     # cast tsv float to int @see TSVFactory.find_column_type
+        self.__dmgap = int(dmgap) # cast tsv float to int @see TSVFactory.find_column_type
         self.__is_fire_damage = is_fire_damage
         self.__is_magical_damage = is_magical
         self.__goal_radius = goal_radius
@@ -528,8 +580,8 @@ class SpecialUnitAbility:
 class ProjectileExplosion:
     def __init__(self, key, detonation_dmg, detonation_dmgap, is_magical):
         self.__key = key
-        self.__detonation_dmg = int(detonation_dmg)
-        self.__detonation_dmgap = int(detonation_dmgap)
+        self.__detonation_dmg = int(detonation_dmg)      # cast tsv float to int @see TSVFactory.find_column_type
+        self.__detonation_dmgap = int(detonation_dmgap)  # cast tsv float to int @see TSVFactory.find_column_type
         self.__magical = is_magical
 
     def get_detonation_string(self):
@@ -564,8 +616,8 @@ class ProjectileExplosion:
 class Projectile:
     def __init__(self, key, dmg, dmgap, b_v_L, b_v_I, is_fire, is_magical, proj_num, voley, explosion_type, proj_explosion_ref, contact_effect):
         self.__key = key
-        self.__dmg = int(dmg)
-        self.__dmgap = int(dmgap)
+        self.__dmg = int(dmg)      # cast tsv float to int @see TSVFactory.find_column_type
+        self.__dmgap = int(dmgap)  # cast tsv float to int @see TSVFactory.find_column_type
         self.__bonus_v_large = b_v_L 
         self.__bonus_v_infantry = b_v_I
         self.__is_fire_damage = is_fire

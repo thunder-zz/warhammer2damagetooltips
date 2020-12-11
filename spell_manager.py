@@ -2,15 +2,6 @@ import xml.etree.ElementTree as ET
 from structs import Vortex, Bombardment, Projectile, ProjectileExplosion, SpecialUnitAbility, AbilityPhase
 
 
-def create_damage_string(dmg, dmgap):
-    if dmg <= 0 and dmgap <= 0: return False
-    damageTxt = ""
-    if(dmg > 0): damageTxt += str(dmg) + " damage"
-    if(dmgap > 0):
-        if(dmg > 0): damageTxt += " & "
-        damageTxt += str(dmgap) + " AP"
-    return damageTxt
-
 class SpellManager:
     def __init__(self, ability_factory):
         self.bombardments = ability_factory.get_bombardments()
@@ -44,17 +35,17 @@ class SpellManager:
 
         # Tooltip generation of projectiles & bombardment spells
         for projectile in self.projectiles.values():
-            used_in_bombardments = projectile.is_used_in_bombardment(self.bombardments)
+            used_bombardments = projectile.is_used_in_bombardment(self.bombardments)
             detonation = projectile.get_projectile_explosion_ref()
             # Create detonation damage tooltip if the projectile has a projectile explosion
             detonation_loc = None
             if detonation != None:
-                    detonation_loc = detonation.get_detonation_string()
+                detonation_loc = detonation.get_detonation_string()
 
-            if len(used_in_bombardments) > 0:
+            if len(used_bombardments) > 0:
                 # part of at least one bombardment spell
-                log.debug("Projectile {key} is a part of bombardment spells: {bspells}".format(key=projectile.key, bspells=str(used_in_bombardments)))
-                for bombardment in used_in_bombardments:
+                log.debug("Projectile {key} is a part of bombardment spells: {bspells}".format(key=projectile.key, bspells=str(used_bombardments)))
+                for bombardment in used_bombardments:
                     # Add damage (and detonation if applicable) tooltips for all bombardments that use this projectile
                     localisation = bombardment.get_bombardment_string(projectile)
                     if(localisation != False and not atg.contains_damage_tooltip(bombardment.key)):
@@ -84,6 +75,7 @@ class SpellManager:
 
         # Add unit and lord abilites. Most of them are reskins of already added abilities but they still need their own tooltips.
         # If it references a vortex/bombardment/project that has tooltips then all tooltips will be copied over.
+        # Unit abilities store info regarding cast time, cost etc... They often share their key with the vortex/bombardment/projectile they use. (Some of the copies are redundant -> tooltip[original] = tooltip[copy])
         for unit_ability in self.special_unit_abilities.values():
             if unit_ability.wind_up_time == 0 and not unit_ability.is_passive:
                 atg.add_wind_up_time_tooltip(unit_ability.key, "Cast time: instant")
@@ -105,10 +97,13 @@ class SpellManager:
             # Check if ability references a vortex spell we already made tooltips for.
             if unit_ability.used_vortex_key != None:
                 (ability_already_added, tooltips) = atg.contains_key(unit_ability.key)
+                # The unit ability uses a vortex with the same key e.g. wind of death (unit ability) uses wind of death vortex
                 if ability_already_added:
                     for tooltip in tooltips:
                         self.copy_tooltips(unit_ability.key, tooltip, atg)
                 else:
+                    # The current unit ability is a reskin of a vortex e.g. bound wind of death.
+                    # The tooltips already generated for wind of death are copied over to the bound spell.
                     log.debug("Need to add new vortex ability: " + unit_ability.key +" that maps to " + unit_ability.used_vortex_key)
                     (contains_vortex, tooltips) = atg.contains_key(unit_ability.used_vortex_key)
                     assert contains_vortex == True, "All vortex spells should be already loaded as they are all decleared in only one file"
@@ -118,13 +113,16 @@ class SpellManager:
             # Check if ability references a bombardment spell we already made tooltips for.
             elif unit_ability.used_bombardment_key != None:
                 (ability_already_added, tooltips) = atg.contains_key(unit_ability.key)
+                # The unit ability uses a defined bombardment with the same key as the bombardment spell
                 if ability_already_added:
                     for tooltip in tooltips:
                         self.copy_tooltips(unit_ability.key, tooltip, atg)
                 else:
+                    # The unit ability is a reskin of an existing bombardment spell
                     log.debug("Need to add new bombardmant ability: " +unit_ability.key +" that maps to " + unit_ability.used_bombardment_key)
                     (contains_bombardment_spell, tooltips) = atg.contains_key(unit_ability.used_bombardment_key)
                     if not contains_bombardment_spell: 
+                        # Has weird interaction with summons which are considered bombardment e.g. plague vermintide
                         log.debug("Need to create new bombardment spell in atg: "+unit_ability.used_bombardment_key)
                         bombardment = self.bombardments[unit_ability.used_bombardment_key]
                         projectile = bombardment.get_projectile(self.projectiles)
@@ -181,4 +179,4 @@ class SpellManager:
         elif tooltip["tag"] == atg.TAG_ON_CONTACT:
             atg.add_on_contact_tooltip(unit_ability_key, tooltip["localisation"])
         else:
-            assert False, "Unkown tooltip tag: " + tooltip["tag"]
+            raise Exception("Unknown tooltip tag: " + tooltip["tag"])

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="projectiles_explosions.xsd" export_time="Fri May 1 11:25:08 2020" revision="575" export_branch="C:/Users/sean.macdonald/AppData/Roaming/TWDaemon/1945/dave" export_user="bob">
-<edit_uuid>e8878ecf-32f6-44d8-a5be-2761e30327df</edit_uuid>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="projectiles_explosions.xsd" export_time="Thu Oct 29 16:52:20 2020" revision="585" export_branch="T:/branches/warhammer2/twilight/warhammer/binaries.x64" export_user="bob">
+<edit_uuid>ec85c0bf-3fe3-47c5-8ed0-b8fbd509f604</edit_uuid>
 <projectiles_explosions record_uuid="{526c4af6-89e8-4365-a844-c7a0a55d4701}" record_timestamp="1484300548244" record_key="boiling_oil_splash">
 <affects_allies>1</affects_allies>
 <camera_shake></camera_shake>
@@ -683,12 +683,12 @@
 <key>wh2_dlc11_cst_bomb_deckdroppers_ror_explosion</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{827274ab-d9c9-4683-94d1-cdecf0b1f00a}" record_timestamp="1531411688531" record_key="wh2_dlc11_cst_bomb_explosion">
+<projectiles_explosions record_uuid="{827274ab-d9c9-4683-94d1-cdecf0b1f00a}" record_timestamp="1602344898417" record_key="wh2_dlc11_cst_bomb_explosion">
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_light</camera_shake>
 <contact_phase_effect></contact_phase_effect>
-<detonation_damage>15</detonation_damage>
-<detonation_damage_ap>5</detonation_damage_ap>
+<detonation_damage>16</detonation_damage>
+<detonation_damage_ap>4</detonation_damage_ap>
 <detonation_duration>0</detonation_duration>
 <detonation_force>200</detonation_force>
 <detonation_radius>3</detonation_radius>
@@ -819,8 +819,8 @@
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_medium</camera_shake>
 <contact_phase_effect>wh2_dlc12_lord_abilities_drop_sphere_of_tepok</contact_phase_effect>
-<detonation_damage>72</detonation_damage>
-<detonation_damage_ap>36</detonation_damage_ap>
+<detonation_damage>90</detonation_damage>
+<detonation_damage_ap>40</detonation_damage_ap>
 <detonation_duration>0</detonation_duration>
 <detonation_force>450</detonation_force>
 <detonation_radius>7</detonation_radius>
@@ -841,8 +841,8 @@
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_medium</camera_shake>
 <contact_phase_effect>wh2_dlc12_lord_abilities_drop_sphere_of_tepok</contact_phase_effect>
-<detonation_damage>108</detonation_damage>
-<detonation_damage_ap>52</detonation_damage_ap>
+<detonation_damage>126</detonation_damage>
+<detonation_damage_ap>56</detonation_damage_ap>
 <detonation_duration>0</detonation_duration>
 <detonation_force>450</detonation_force>
 <detonation_radius>7</detonation_radius>
@@ -1057,7 +1057,7 @@
 <key>wh2_dlc13_emp_art_mortar_ror_0</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{df8832ea-709c-495b-9f17-da22d2f6c317}" record_timestamp="1563367655576" record_key="wh2_dlc13_emp_grenade_explosion">
+<projectiles_explosions record_uuid="{df8832ea-709c-495b-9f17-da22d2f6c317}" record_timestamp="1602345583667" record_key="wh2_dlc13_emp_grenade_explosion">
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_light</camera_shake>
 <contact_phase_effect></contact_phase_effect>
@@ -1673,7 +1673,7 @@
 <key>wh2_dlc15_hef_sun_dragon_explosion_imrik</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{2321c2b9-adda-4016-aa7b-b447cc892108}" record_timestamp="1588003354096" record_key="wh2_dlc15_lord_passive_mistwalkers_barrage">
+<projectiles_explosions record_uuid="{2321c2b9-adda-4016-aa7b-b447cc892108}" record_timestamp="1590069760895" record_key="wh2_dlc15_lord_passive_mistwalkers_barrage">
 <affects_allies>0</affects_allies>
 <camera_shake>wh_main_unit_explosion_light</camera_shake>
 <contact_phase_effect></contact_phase_effect>
@@ -1759,6 +1759,94 @@
 <ignition_amount>0</ignition_amount>
 <is_magical>0</is_magical>
 <key>wh2_dlc15_unit_passive_rubble_and_ruin_bombardment</key>
+<shrapnel></shrapnel>
+</projectiles_explosions>
+<projectiles_explosions record_uuid="{88fe43e4-d7ee-4f39-8c8c-e36aac4c8b79}" record_timestamp="1591719209565" record_key="wh2_dlc16_item_abilities_dart_of_doom">
+<affects_allies>1</affects_allies>
+<camera_shake>wh_main_unit_explosion_light</camera_shake>
+<contact_phase_effect>wh2_dlc16_unit_contact_weakened</contact_phase_effect>
+<detonation_damage>90</detonation_damage>
+<detonation_damage_ap>30</detonation_damage_ap>
+<detonation_duration>1</detonation_duration>
+<detonation_force>150</detonation_force>
+<detonation_radius>7</detonation_radius>
+<detonation_speed>15</detonation_speed>
+<detonation_type>shockwave</detonation_type>
+<detonator_type>percussive</detonator_type>
+<explosion_audio>wh2_dlc16_item_abilities_dart_of_doom</explosion_audio>
+<explosion_particle_effect></explosion_particle_effect>
+<explosion_particle_effect_on_ground></explosion_particle_effect_on_ground>
+<fuse_distance_from_target>0</fuse_distance_from_target>
+<fuse_fixed_time>-1</fuse_fixed_time>
+<ignition_amount>0</ignition_amount>
+<is_magical>1</is_magical>
+<key>wh2_dlc16_item_abilities_dart_of_doom</key>
+<shrapnel></shrapnel>
+</projectiles_explosions>
+<projectiles_explosions record_uuid="{7f1fad83-fb75-4e3b-ba70-13762ef26dfc}" record_timestamp="1603729099442" record_key="wh2_dlc16_item_abilities_eagle_quiver">
+<affects_allies>1</affects_allies>
+<camera_shake>wh_main_unit_explosion_medium</camera_shake>
+<contact_phase_effect></contact_phase_effect>
+<detonation_damage>0</detonation_damage>
+<detonation_damage_ap>300</detonation_damage_ap>
+<detonation_duration>1</detonation_duration>
+<detonation_force>175</detonation_force>
+<detonation_radius>6</detonation_radius>
+<detonation_speed>10</detonation_speed>
+<detonation_type>shockwave</detonation_type>
+<detonator_type>percussive</detonator_type>
+<explosion_audio></explosion_audio>
+<explosion_particle_effect>wh_dlc05_ability_arrow_of_kurnous_explosion</explosion_particle_effect>
+<explosion_particle_effect_on_ground></explosion_particle_effect_on_ground>
+<fuse_distance_from_target>0</fuse_distance_from_target>
+<fuse_fixed_time>-1</fuse_fixed_time>
+<ignition_amount>0</ignition_amount>
+<is_magical>1</is_magical>
+<key>wh2_dlc16_item_abilities_eagle_quiver</key>
+<shrapnel></shrapnel>
+</projectiles_explosions>
+<projectiles_explosions record_uuid="{6f45169f-39fb-4d13-b1d4-f6c02917097c}" record_timestamp="1603731693106" record_key="wh2_dlc16_unit_abilities_volley_of_kurnous">
+<affects_allies>1</affects_allies>
+<camera_shake>wh_main_unit_explosion_light</camera_shake>
+<contact_phase_effect></contact_phase_effect>
+<detonation_damage>0</detonation_damage>
+<detonation_damage_ap>30</detonation_damage_ap>
+<detonation_duration>1</detonation_duration>
+<detonation_force>150</detonation_force>
+<detonation_radius>3</detonation_radius>
+<detonation_speed>10</detonation_speed>
+<detonation_type>shockwave</detonation_type>
+<detonator_type>percussive</detonator_type>
+<explosion_audio></explosion_audio>
+<explosion_particle_effect>wh_dlc05_ability_arrow_of_kurnous_explosion</explosion_particle_effect>
+<explosion_particle_effect_on_ground></explosion_particle_effect_on_ground>
+<fuse_distance_from_target>0</fuse_distance_from_target>
+<fuse_fixed_time>-1</fuse_fixed_time>
+<ignition_amount>0</ignition_amount>
+<is_magical>1</is_magical>
+<key>wh2_dlc16_unit_abilities_volley_of_kurnous</key>
+<shrapnel></shrapnel>
+</projectiles_explosions>
+<projectiles_explosions record_uuid="{45eafa4e-ea6c-43a1-a557-d1a8593e965d}" record_timestamp="1597841893799" record_key="wh2_dlc16_wef_talon_of_dawn_arrow">
+<affects_allies>1</affects_allies>
+<camera_shake>wh_main_unit_explosion_light</camera_shake>
+<contact_phase_effect></contact_phase_effect>
+<detonation_damage>0</detonation_damage>
+<detonation_damage_ap>0</detonation_damage_ap>
+<detonation_duration>0</detonation_duration>
+<detonation_force>100</detonation_force>
+<detonation_radius>3</detonation_radius>
+<detonation_speed>10</detonation_speed>
+<detonation_type>shockwave</detonation_type>
+<detonator_type>percussive</detonator_type>
+<explosion_audio state="NOT_APPROVED" last_approved_text="" last_edit_user="bob"></explosion_audio>
+<explosion_particle_effect>wh2_dlc16_talon_of_dawn_impact</explosion_particle_effect>
+<explosion_particle_effect_on_ground></explosion_particle_effect_on_ground>
+<fuse_distance_from_target>0</fuse_distance_from_target>
+<fuse_fixed_time>-1</fuse_fixed_time>
+<ignition_amount>0</ignition_amount>
+<is_magical>1</is_magical>
+<key>wh2_dlc16_wef_talon_of_dawn_arrow</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
 <projectiles_explosions record_uuid="{14a78ff2-fcca-475b-ada0-8a4c94a00791}" record_timestamp="1509104147431" record_key="wh2_dlc_09_character_abilities_stay_here_ill_get_help_miscast">
@@ -4005,11 +4093,11 @@
 <key>wh_main_death_miscast</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{569a68e2-ce4a-446e-b05d-b7f2b263c977}" record_timestamp="1492616683683" record_key="wh_main_dwf_blasting_charge_explosion">
+<projectiles_explosions record_uuid="{569a68e2-ce4a-446e-b05d-b7f2b263c977}" record_timestamp="1602344898416" record_key="wh_main_dwf_blasting_charge_explosion">
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_light</camera_shake>
 <contact_phase_effect></contact_phase_effect>
-<detonation_damage>24</detonation_damage>
+<detonation_damage>21</detonation_damage>
 <detonation_damage_ap>7</detonation_damage_ap>
 <detonation_duration>0</detonation_duration>
 <detonation_force>200</detonation_force>
@@ -4027,12 +4115,12 @@
 <key>wh_main_dwf_blasting_charge_explosion</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{51210b3a-cbee-435d-a0bb-0840fba15220}" record_timestamp="1480095494148" record_key="wh_main_dwf_cinderblast_explosion">
+<projectiles_explosions record_uuid="{51210b3a-cbee-435d-a0bb-0840fba15220}" record_timestamp="1602344898417" record_key="wh_main_dwf_cinderblast_explosion">
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_light</camera_shake>
 <contact_phase_effect></contact_phase_effect>
-<detonation_damage>30</detonation_damage>
-<detonation_damage_ap>12</detonation_damage_ap>
+<detonation_damage>27</detonation_damage>
+<detonation_damage_ap>11</detonation_damage_ap>
 <detonation_duration>0</detonation_duration>
 <detonation_force>200</detonation_force>
 <detonation_radius>3</detonation_radius>
@@ -4115,12 +4203,12 @@
 <key>wh_main_dwf_flamecannon_explosion</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{cc2fe9a9-b3df-4691-a754-dd082ff9b0db}" record_timestamp="1467100079082" record_key="wh_main_dwf_grudge_thrower_explosion">
+<projectiles_explosions record_uuid="{cc2fe9a9-b3df-4691-a754-dd082ff9b0db}" record_timestamp="1603146144672" record_key="wh_main_dwf_grudge_thrower_explosion">
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_medium</camera_shake>
 <contact_phase_effect></contact_phase_effect>
-<detonation_damage>40</detonation_damage>
-<detonation_damage_ap>65</detonation_damage_ap>
+<detonation_damage>50</detonation_damage>
+<detonation_damage_ap>70</detonation_damage_ap>
 <detonation_duration>0</detonation_duration>
 <detonation_force>180</detonation_force>
 <detonation_radius>4</detonation_radius>
@@ -4181,7 +4269,7 @@
 <key>wh_main_dwf_trollhammer</key>
 <shrapnel></shrapnel>
 </projectiles_explosions>
-<projectiles_explosions record_uuid="{234c68c7-ed83-4982-9260-294df3da04cf}" record_timestamp="1478787470482" record_key="wh_main_emp_grenade_explosion">
+<projectiles_explosions record_uuid="{234c68c7-ed83-4982-9260-294df3da04cf}" record_timestamp="1602345583667" record_key="wh_main_emp_grenade_explosion">
 <affects_allies>1</affects_allies>
 <camera_shake>wh_main_unit_explosion_light</camera_shake>
 <contact_phase_effect></contact_phase_effect>

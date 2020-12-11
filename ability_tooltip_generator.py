@@ -2,8 +2,9 @@ import sys
 import hashlib
 import os
 
+# TODO: Refactor add_tooltip completely, get rid of redundant functions
 class AbilityTooltipGenerator:
-    # TAG -> [Reference, Sort order priority] (Higher = lower in the game UI tooltip)
+    # :TAG -> [Reference concatenated in tsv, Sort order priority (Higher = displayed lower in the game UI tooltip)]
     TAG_DAMAGE_TOOLTIP = ["_th_damage_tooltip", 190]
     TAG_PHASE_TOOLTIP = ["_th_phase_damage_tooltip", 191]
     TAG_DETONATION_DAMAGE_TOOLTIP = ["_th_detonation_damage_tooltip", 192]
@@ -15,7 +16,7 @@ class AbilityTooltipGenerator:
     TAG_ON_CONTACT = ["_th_on_projectile_cont", 197]
 
     def __init__(self, log):
-        self.arr_tooltips = {} # Map<key+tag, tooltip> probably should be Map<key, Map<tag, tooltip>> where tooltip is in the form {key, localisation, tag}
+        self.arr_tooltips = {} # Map<key, Map<tag, tooltip>> where tooltip is in the form {key : str, localisation : str, tag : TAG}
         self.log = log
 
     def dump(self):
@@ -33,37 +34,32 @@ class AbilityTooltipGenerator:
     def contains_key(self, key):
         found = False
         tooltips = []
-        for var in AbilityTooltipGenerator.__dict__:
-            if var.startswith("TAG"):
-                tag = AbilityTooltipGenerator.__dict__[var]
-                if key + tag[0] in self.arr_tooltips:
-                    if tag != AbilityTooltipGenerator.TAG_WIND_UP_TINE: #hack
-                        found = True
-                        tooltips.append(self.arr_tooltips[key + tag[0]])
 
-
+        if key in self.arr_tooltips:
+            tips = self.arr_tooltips[key]
+            for tooltip in tips.values():
+                if tooltip["tag"][0] != AbilityTooltipGenerator.TAG_WIND_UP_TINE[0]:
+                    found = True
+                    tooltips.append(tooltip)
+        #TODO: @Refactor remove found and use len(tooltips) instead
         return [found, tooltips]
 
     # Returns true if a damage tooltip exists for the key
     def contains_damage_tooltip(self, key):
-        return key + self.TAG_DAMAGE_TOOLTIP[0] in self.arr_tooltips
+        return key in self.arr_tooltips and self.TAG_DAMAGE_TOOLTIP[0] in self.arr_tooltips[key]
 
     # Returns true if a detonation tooltip exists for the key
     def contains_detonation_tooltip(self, key):
-        return key + self.TAG_DETONATION_DAMAGE_TOOLTIP[0] in self.arr_tooltips
+        return key in self.arr_tooltips and self.TAG_DETONATION_DAMAGE_TOOLTIP[0] in self.arr_tooltips[key]
 
     def _add_tooltip(self, tooltip):
-        key = tooltip["key"] + tooltip["tag"][0]
-
-        # Has been used to debug logic errors
-        if key in self.arr_tooltips and tooltip["localisation"] != self.arr_tooltips[key]["localisation"]:
-            print("Warning already added: " + key)
-            print("New localisation: " + tooltip["localisation"])
-            print("Current localisation: " +self.arr_tooltips[key]["localisation"])
-            return
+        key = tooltip["key"]
+        if key in self.arr_tooltips:
+            self.arr_tooltips[key][tooltip["tag"][0]] = tooltip
+        else:
+            self.arr_tooltips[key] = {tooltip["tag"][0]: tooltip}
         
         self.log.debug("Added tooltip: " +str(tooltip))
-        self.arr_tooltips[key] = tooltip
 
     def add_damage_tooltip(self, key, localisation):
         self._add_tooltip({"key":key, "localisation": localisation, "tag": self.TAG_DAMAGE_TOOLTIP})
@@ -104,6 +100,7 @@ class AbilityTooltipGenerator:
     def add_on_contact_tooltip(self, key, localisation):
         self._add_tooltip({"key": key, "localisation": localisation, "tag": self.TAG_ON_CONTACT})
 
+    # TODO: Investigate why this exists
     def add_tooltips(self, type, detonation, damageTxt, log):
         if damageTxt != False:
             log.debug("Added damage tooltip with key: {key} and text: {text}".format(key=type.key,text=damageTxt))
@@ -152,15 +149,16 @@ class AbilityTooltipGenerator:
         localisaton_file.write("Loc PackedFile\t1\n")
         localisaton_file.write("key\ttext\ttooltip\n")
 
-        for tooltip in self.arr_tooltips.values():
-            log.info("Saving tooltip: " + str(tooltip))
-            tooltip_ref = self._create_tooltip_ref(tooltip)
-            tooltip_sort_order_file.write(tooltip_ref +"\t" + str(tooltip["tag"][1]) +"\n")
-            ability_to_tooltip_map_file.write(tooltip['key'] +"\t" + tooltip_ref +"\n")
-            if "contact" in tooltip_ref:
-                localisaton_file.write('special_ability_phases_onscreen_name_' + tooltip["key"] +'\t' + self._format_contact_localisation(tooltip['localisation']) +'\ttrue\n')
-            else:
-                localisaton_file.write('unit_abilities_additional_ui_effects_localised_text_' + tooltip_ref +'\t' + self._format_localisation(tooltip['localisation']) +'\ttrue\n')
+        for key in self.arr_tooltips:
+            for tooltip in self.arr_tooltips[key].values():        
+                log.info("Saving tooltip: " + str(tooltip))
+                tooltip_ref = self._create_tooltip_ref(tooltip)
+                tooltip_sort_order_file.write(tooltip_ref +"\t" + str(tooltip["tag"][1]) +"\n")
+                ability_to_tooltip_map_file.write(tooltip['key'] +"\t" + tooltip_ref +"\n")
+                if "contact" in tooltip_ref:
+                    localisaton_file.write('special_ability_phases_onscreen_name_' + tooltip["key"] +'\t' + self._format_contact_localisation(tooltip['localisation']) +'\ttrue\n')
+                else:
+                    localisaton_file.write('unit_abilities_additional_ui_effects_localised_text_' + tooltip_ref +'\t' + self._format_localisation(tooltip['localisation']) +'\ttrue\n')
 
         tooltip_sort_order_file.close()
         ability_to_tooltip_map_file.close()
@@ -169,17 +167,35 @@ class AbilityTooltipGenerator:
         log.reset_active_class()
 
 
+    # Check if the contents of th_damage_loc (tooltip localisation) matches with the
+    # test loc file in any order (any line number).
+    def test_loc_integrity(self):
+        f_new = open("out/th_damage_loc.tsv", "r")
+        f_test = open("out/th_damage_loc_test.tsv", "r")
+
+        test_content = {}
+        test_lines = f_test.readlines()
+        for i in range(2, len(test_lines)):
+            line = test_lines[i].replace("\n", "").split("\t")
+            test_content[line[0]] = line[1]
+        f_test.close()
+
+        new_lines = f_new.readlines()
+        for i in range(2, len(new_lines)):
+            line = new_lines[i].replace("\n", "").split("\t")
+            assert line[0] in test_content and test_content[line[0]] == line[1], "Missing line: " + line
+
     # Compare hashes of generated files with existing files (must end with "_test.tsv").
-    # Used to test if refactoring has changed the output.
-    def test_output_integrity(self, test_ui_effects = True, test_ui_effects_juncs = True, test_loc = True):
-        if test_ui_effects: assert self.valid_hash("unit_abilities_additional_ui_effects_tables"), "UE effects table mismatch"
-        if test_ui_effects_juncs: assert self.valid_hash("unit_abilities_to_additional_ui_effects_juncs_tables"), "UI effects juncs table mismatch"
-        if test_loc: assert self.valid_hash("th_damage_loc"), "Localisation mismatch"
+    # Used to test if refactoring has changed the output in any way (missing tooltips or tooltips in different order).
+    def test_output_integrity_strict(self, test_ui_effects = True, test_ui_effects_juncs = True, test_loc = True):
+        if test_ui_effects: assert self.valid_hash("out/unit_abilities_additional_ui_effects_tables"), "Unit additional effects table mismatch"         # redundant with check to loc
+        if test_ui_effects_juncs: assert self.valid_hash("out/unit_abilities_to_additional_ui_effects_juncs_tables"), "UI effects juncs table mismatch" # redundant with check to loc
+        if test_loc: assert self.valid_hash("out/th_damage_loc"), "Localisation mismatch"
         print("Hashes match")
 
     def valid_hash(self, file):
         h1 = self.hash(file +".tsv")
-        h2 = self.hash(file +"_test" + ".tsv")
+        h2 = self.hash(file +"_test.tsv")
         return h1["md5"] == h2["md5"] and h1["sha1"] == h2["sha1"] and h1["sha384"] == h2["sha384"]
 
     def hash(self, file):
